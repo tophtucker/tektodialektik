@@ -1,8 +1,15 @@
-# ripped from
+# to-do
+
+- shoot letters w/ up/down arrows  
+- include cursor in force nodes  
+- rewrite in canvas lol  
+- refine game mechanics... better bomb and attractor....  
+- better letter expiration, like after a long time  
+- play with other mechanics  
+
+# ripped from @socketio/chat-example
 
 https://github.com/socketio/chat-example
-
-# chat-example
 
 This is the source code for a very simple chat example used for
 the [Getting Started](http://socket.io/get-started/chat/) guide
