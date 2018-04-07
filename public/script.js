@@ -29,6 +29,10 @@ document.addEventListener('keydown', (event) => {
 })
 
 document.addEventListener('keypress', (event) => {
+  if(event.repeat) return
+  if(currentKey && event.key.length === 1) {
+    emitKey()
+  }
   if(!currentKey && event.key.length === 1) {
     currentKey = newKey(event.key, Date.now())
   }
@@ -36,12 +40,7 @@ document.addEventListener('keypress', (event) => {
 
 document.addEventListener('keyup', (event) => {
   if(currentKey && currentKey.key === event.key) {
-
-    currentKey.end = Date.now()
-    currentKey.size = sizeScale(Date.now() - currentKey.start)
-    socket.emit('chat message', currentKey)
-    advanceCursor(currentKey.size * .6)
-    currentKey = null
+    emitKey()
   }
 });
 
@@ -87,6 +86,14 @@ function newKey(key, start) {
     y: cursor[1],
     theta: cursor[2],
   }
+}
+
+function emitKey() {
+  currentKey.end = Date.now()
+  currentKey.size = sizeScale(Date.now() - currentKey.start)
+  socket.emit('chat message', currentKey)
+  advanceCursor(currentKey.size * .6)
+  currentKey = null
 }
 
 function advanceCursor(amount = 14) {
