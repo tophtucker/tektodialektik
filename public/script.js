@@ -1,4 +1,5 @@
 var socket = io();
+var simulation;
 
 const sizeScale = d3.scaleLinear()
   .domain([0, 3000])
@@ -21,6 +22,7 @@ var caret = d3.select("#caret")
   .style("background", fontColor)
 
 var currentKey = null
+var nodes = []
 
 document.addEventListener('keydown', (event) => {
   if(event.which === 37) cursor[2] -= Math.PI/4
@@ -45,15 +47,41 @@ document.addEventListener('keyup', (event) => {
 });
 
 socket.on('chat message', function(msg){
-  messages.append("div")
-    .style("left", `${msg.x}px`)
-    .style("top", `${msg.y}px`)
+  nodes.push(msg)
+
+  var msgs = messages.selectAll("div")
+    .data(nodes)
+
+  msgs.exit().remove()
+
+  msgs.enter().append("div")
     .style("font-size", `${msg.size}px`)
     .style("font-family", msg.fontFamily)
     .style("color", msg.fontColor)
     .style("transform", `translate(0, ${-msg.size/2}px) rotate(${msg.theta}rad)`)
-    .text(msg.key)
+    .text(d => d.key)
+  // .merge(msgs)
+
+  simulation = d3.forceSimulation(nodes)
+    // .force("charge", d3.forceManyBody().strength(-1))
+    .force("collide", d3.forceCollide(d => d.size/2).strength(1))
+    .on("tick", ticked);
+
+  // messages.append("div")
+  //   .style("left", `${msg.x}px`)
+  //   .style("top", `${msg.y}px`)
+  //   .style("font-size", `${msg.size}px`)
+  //   .style("font-family", msg.fontFamily)
+  //   .style("color", msg.fontColor)
+  //   .style("transform", `translate(0, ${-msg.size/2}px) rotate(${msg.theta}rad)`)
+  //   .text(msg.key)
 });
+
+function ticked() {
+  messages.selectAll("div")
+    .style("left", d => `${d.x}px`)
+    .style("top", d => `${d.y}px`)
+}
 
 d3.timer(() => {
   caret
@@ -92,7 +120,7 @@ function emitKey() {
   currentKey.end = Date.now()
   currentKey.size = sizeScale(Date.now() - currentKey.start)
   socket.emit('chat message', currentKey)
-  advanceCursor(currentKey.size * .6)
+  advanceCursor(currentKey.size * 1)
   currentKey = null
 }
 
