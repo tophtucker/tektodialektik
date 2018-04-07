@@ -25,10 +25,11 @@ var currentKey = null
 document.addEventListener('keydown', (event) => {
   if(event.which === 37) cursor[2] -= Math.PI/4
   if(event.which === 39) cursor[2] += Math.PI/4
+  if(event.which === 13) advanceCursorVertically()
 })
 
 document.addEventListener('keypress', (event) => {
-  if(!currentKey) {
+  if(!currentKey && event.key.length === 1) {
     currentKey = newKey(event.key, Date.now())
   }
 });
@@ -92,6 +93,35 @@ function advanceCursor(amount = 14) {
   var newCursor = [
     cursor[0] + amount * Math.cos(cursor[2]),
     cursor[1] + amount * Math.sin(cursor[2]),
+    cursor[2]
+  ]
+  if(newCursor[0] < 0) {
+    newCursor[0] = innerWidth
+    newCursor[1] -= 20
+  }
+  if(newCursor[0] > innerWidth) {
+    newCursor[0] = 0
+    newCursor[1] += 20
+  }
+  if(newCursor[1] < 0) {
+    newCursor[1] = innerHeight
+    newCursor[0] += 20
+  }
+  if(newCursor[1] > innerHeight) {
+    newCursor[1] = 0
+    newCursor[0] -= 20
+  }
+  if(!(newCursor[0] >= 0 && newCursor[0] <= innerWidth) || !(newCursor[1] >= 0 && newCursor[1] <= innerHeight)) {
+    newCursor[0] = 20
+    newCursor[1] = 20
+  }
+  cursor = newCursor
+}
+
+function advanceCursorVertically(amount = 14) {
+  var newCursor = [
+    cursor[0] + amount * -Math.sin(cursor[2]),
+    cursor[1] + amount * Math.cos(cursor[2]),
     cursor[2]
   ]
   if(newCursor[0] < 0) {

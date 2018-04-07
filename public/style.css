@@ -28,4 +28,5 @@ html, body {
 
 #current {
   position: absolute;
+  opacity: .3;
 }
