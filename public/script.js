@@ -72,7 +72,7 @@ socket.on('chat message', function(msg){
     .text(d => d.key)
 
   simulation = d3.forceSimulation(nodes)
-    .velocityDecay(0.1)
+    // .velocityDecay(0.1)
     // .force("charge", d3.forceManyBody().strength(d => d.key === "?" ? 1 : 0))
     .force("collide", d3.forceCollide(d => d.key === "!" ? d.size : d.size * .4).strength(1))
     .on("tick", ticked);
